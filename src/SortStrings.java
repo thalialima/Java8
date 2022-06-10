@@ -1,8 +1,8 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+import static java.util.Comparator.*;
 
 public class SortStrings {
     public static void main(String[] args) {
@@ -34,9 +34,14 @@ public class SortStrings {
         System.out.println(words);
 
         words.forEach(System.out::println);
+        //method reference is like a lambda (short lambda)
         words.sort(Comparator.comparingInt(String::length));
+        //palavras, ordene comparando o length da string
+        words.sort(comparing(String::length));
 
         new Thread(() -> System.out.println("Executing thread")).start();
+
+        words.forEach(System.out::println);
 
     }
 }
