@@ -1,8 +1,6 @@
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class TestCourses {
     public static void main(String[] args) {
@@ -34,20 +32,48 @@ public class TestCourses {
                 .filter(course -> course.getHours() > 15)
                 .forEach(System.out::println);
 
-        System.out.println("map");
+        System.out.println("** Map");
         courses.stream()
                 .filter(course -> course.getHours() > 15)
                 .map(Course::getStudents)
                 .forEach(students -> students.forEach(student -> System.out.println(student.getName())));
 
-        System.out.println("mapToInt");
+        System.out.println("** Map To Int");
         IntStream intStream = courses.stream()
                 .mapToInt(Course::getHours);
 
         System.out.println(intStream.sum());
 
         //stream is not the same thing that collections
+        Optional<Course> first = courses.stream()
+                .filter(course -> course.getHours() == 20)
+                .findFirst();
+
+        System.out.println("** Using optional");
+        first.ifPresent(course -> System.out.println(course.getName()));
 
 
+        List<Course> collect = courses.stream().filter(course -> course.getHours() < 15)
+                .collect(Collectors.toList());
+        System.out.println("** Using Collectors");
+        collect.forEach(course -> System.out.println(course.getName()));
+
+        System.out.println("** Using Collectors with Map");
+        Map<String, Set<Student>> stringSetMap = courses.stream().filter(course -> course.getHours() < 15)
+                .collect(Collectors.toMap(c -> c.getName(), c -> c.getStudents()));
+
+        System.out.println(stringSetMap);
+
+        System.out.println("** Using ForEach biConsumer");
+        courses.stream()
+                .filter(course -> course.getHours() < 15)
+                .collect(Collectors.toMap(c -> c.getName(), c -> c.getStudents()))
+                .forEach((name, students) -> System.out.println("Course: " + name + " has " + students.size() + " students"));
+
+        //parallelStream brakes the operation in threads
+        courses.parallelStream()
+                .filter(course -> course.getHours() < 15)
+                .collect(Collectors.toMap(c -> c.getName(), c -> c.getStudents()))
+                .forEach((name, students) -> System.out.println("Course: " + name + " has " + students.size() + " students"));
     }
 }
